@@ -156,3 +156,25 @@ router.put('/:documento', async (req, res) => {
         res.status(500).json({ error: error.message})
     }
 });
+
+
+// Eliminar cliente 
+
+router.delete('/:documento', async (req, res) => {
+    try{
+        const [result] = await pool.query(
+            'DELETE FROM cliente WHERE documentoCliente = ?', 
+            [req.params.documento]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({error: 'Cliente no encontrado'});
+        }
+
+        res.json({mensaje: 'Cliente eliminado exitosamente'});
+    } catch (error) {
+        res.status(500).json({ error: error.message})
+    }
+});
+
+export default router;

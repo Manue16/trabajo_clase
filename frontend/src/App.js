@@ -1,21 +1,23 @@
-import react, { useEffect, useState } from "react";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Clientes from "./pages/clientes";
 
-const App = () => {
-  const [mensaje, setMensaje] = useState("");
-
-  useEffect(() => {
-    fetch('http://localhost:5000/api/mensaje')
-      .then(res => res.json())
-      .then(data => setMensaje(data.mensaje))
-      .catch(err => console.error('Error de conexion:', err));
-  }, []);
-   
-    return (
-      <div>
-        <h1>Mensaje del backend:</h1>
-        <p>{mensaje}</p>
+function App() {
+  return(
+    <Router>
+      <Navbar/>
+      <div className="container mt-4">
+        <Routes>
+          <Route path="/clientes" element={<Clientes/>}/>
+          <Route path="/" element={
+            <div className="text-center mt-5">
+              <h1>Bienvenido al Sistema de Almacén</h1>
+              <p className="lead">Seleccione una opción del menú para comenzar</p>
+            </div>
+          }/>
+        </Routes>
       </div>
-    );
-  
-};
-export default App;
+    </Router>
+  );
+}
