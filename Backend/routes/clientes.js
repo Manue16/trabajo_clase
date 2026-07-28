@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
         if (search) {
             const searchCondition = ` WHERE
             documentoCliente LIKE ? OR
-            nombre Cliente LIKE ? OR
+            nombreCliente LIKE ? OR
             apellidoCliente LIKE ?`;
         
         query += searchCondition;
@@ -53,7 +53,7 @@ router.get('/', async (req, res) => {
 router.get('/:documento',async (req,res) => {
     try{
         const [rows] = await pool.query(
-            'SELECT * FROM cliente WHERE documentoCliente = ?',
+            'SELECT * FROM clientes WHERE documentoCliente = ?',
             [req.params.documento]
         );
 
@@ -88,7 +88,7 @@ router.post ('/', async (req,res) => {
 
         // Verificar si ya existe el documento
         const [existing] = await pool.query(
-            'SELECT documentoCliente FROM cliente WHERE documentoCliente = ?',
+            'SELECT documentoCliente FROM clientes WHERE documentoCliente = ?',
             [documentoCliente]
         );
 
@@ -99,11 +99,11 @@ router.post ('/', async (req,res) => {
         }
 
         await pool.query(
-            `INSERT INTO cliente ( 
+            `INSERT INTO clientes ( 
                 documentoCliente,
                 tipoDocumentoCliente,
                 nombreCliente,
-                apellidoCLiente,
+                apellidoCliente,
                 emailCliente,
                 telefonoCliente,
                 direccionCliente
@@ -136,7 +136,7 @@ router.put('/:documento', async (req, res) => {
         } = req.body;
 
         const [result] = await pool.query(
-            `UPDATE cliente SET
+            `UPDATE clientes SET
             tipoDocumentoCliente = ?,
             nombreCliente = ?,
             apellidoCLiente = ?,
@@ -163,7 +163,7 @@ router.put('/:documento', async (req, res) => {
 router.delete('/:documento', async (req, res) => {
     try{
         const [result] = await pool.query(
-            'DELETE FROM cliente WHERE documentoCliente = ?', 
+            'DELETE FROM clientes WHERE documentoCliente = ?', 
             [req.params.documento]
         );
 

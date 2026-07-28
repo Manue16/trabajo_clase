@@ -19,7 +19,7 @@ app.use(express.json());
 //     res.json({ mensaje: "Hola, este es un mensaje del backend!" });
 // });
 
-app.use('api/clientes', clienteRoutes);
+app.use('/api/clientes', clienteRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port http://localhost:${PORT}`);
