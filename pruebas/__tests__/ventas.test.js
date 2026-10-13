@@ -227,3 +227,36 @@ describe('Ronda 3 - Respuestas faltantes - Ventas', () => {
     expect(res.body.error).toBe('Venta no encontrada');
   });
 });
+
+// =====================================================================
+// Ronda 4 (13/10/2026): ramas parciales que faltaban
+// =====================================================================
+describe('Ronda 4 - Ramas faltantes - Ventas', () => {
+
+  test('GET / debe ignorar un filtro que no está permitido', async () => {
+    pool.query.mockResolvedValueOnce([[]]);
+
+    await request(app).get('/ventas?id_cliente=4&columnaInvalida=x');
+
+    const queryEjecutada = pool.query.mock.calls[0][0];
+    expect(queryEjecutada).toContain('WHERE v.id_cliente = ?');
+    expect(queryEjecutada).not.toContain('columnaInvalida');
+    expect(pool.query.mock.calls[0][1]).toEqual(['4']);
+  });
+
+  test('PATCH /:id con fecha debe convertirla a Date', async () => {
+    // 1ra: UPDATE, 2da: SELECT actualizado
+    pool.query
+      .mockResolvedValueOnce([{ affectedRows: 1 }])
+      .mockResolvedValueOnce([[{ id: 1, fecha: '2026-10-05' }]]);
+
+    const res = await request(app)
+      .patch('/ventas/1')
+      .send({ fecha: '2026-10-05', total: 3000 });
+
+    expect(res.statusCode).toBe(200);
+    expect(pool.query.mock.calls[0][0]).toContain('SET fecha = ?, total = ?');
+    expect(pool.query.mock.calls[0][1][0]).toBeInstanceOf(Date);
+    expect(pool.query.mock.calls[0][1].slice(1)).toEqual([3000, '1']);
+  });
+});
