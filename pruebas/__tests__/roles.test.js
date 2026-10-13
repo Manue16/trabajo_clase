@@ -149,3 +149,38 @@ describe('Ronda 2 - Cobertura de catch (error 500) - Roles', () => {
     expect(pool.query).toHaveBeenCalledTimes(1);
   });
 });
+
+// =====================================================================
+// Ronda 3 (13/10/2026): respuestas que no tenían prueba
+// =====================================================================
+describe('Ronda 3 - Respuestas faltantes - Roles', () => {
+
+  test('GET /:id debe retornar el rol encontrado', async () => {
+    pool.query.mockResolvedValueOnce([[{ id_rol: 1, tipo_rol: 'Administrador' }]]);
+
+    const res = await request(app).get('/roles/1');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ id_rol: 1, tipo_rol: 'Administrador' });
+  });
+
+  test('PUT /:id debe retornar el rol actualizado', async () => {
+    pool.query.mockResolvedValueOnce([{ affectedRows: 1 }]);
+
+    const res = await request(app)
+      .put('/roles/2')
+      .send({ tipo_rol: 'Bodeguero' });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ id_rol: 2, tipo_rol: 'Bodeguero' });
+  });
+
+  test('DELETE /:id debe retornar 404 si el rol no existe', async () => {
+    pool.query.mockResolvedValueOnce([{ affectedRows: 0 }]);
+
+    const res = await request(app).delete('/roles/99');
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error).toBe('Rol no encontrado');
+  });
+});

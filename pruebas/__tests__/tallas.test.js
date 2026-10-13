@@ -168,3 +168,27 @@ describe('Ronda 2 - Cobertura de catch (error 500) - Tallas', () => {
     expect(pool.query).toHaveBeenCalledTimes(1);
   });
 });
+
+// =====================================================================
+// Ronda 3 (13/10/2026): respuestas que no tenían prueba
+// =====================================================================
+describe('Ronda 3 - Respuestas faltantes - Tallas', () => {
+
+  test('GET /:id debe retornar la talla encontrada', async () => {
+    pool.query.mockResolvedValueOnce([[{ id: 1, medida_id: 1, talla: 'M', tipo_medida: 'Ropa' }]]);
+
+    const res = await request(app).get('/tallas/1');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.talla).toBe('M');
+  });
+
+  test('DELETE /:id debe retornar 404 si la talla no existe', async () => {
+    pool.query.mockResolvedValueOnce([{ affectedRows: 0 }]);
+
+    const res = await request(app).delete('/tallas/99');
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error).toBe('Talla no encontrada');
+  });
+});

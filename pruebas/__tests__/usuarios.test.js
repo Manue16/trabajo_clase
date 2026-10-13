@@ -225,3 +225,43 @@ describe('Ronda 2 - Cobertura de catch (error 500) - Usuarios', () => {
     expect(pool.query).toHaveBeenCalledTimes(1);
   });
 });
+
+// =====================================================================
+// Ronda 3 (13/10/2026): respuestas que no tenían prueba
+// =====================================================================
+describe('Ronda 3 - Respuestas faltantes - Usuarios', () => {
+
+  test('GET /:id debe retornar el usuario encontrado', async () => {
+    pool.query.mockResolvedValueOnce([[{ id: 1, login: 'admin', email: 'admin@test.com', tipo_rol: 'Administrador' }]]);
+
+    const res = await request(app).get('/usuarios/1');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.login).toBe('admin');
+  });
+
+  test('PATCH /:id debe actualizar parcialmente y retornar el usuario', async () => {
+    // 1ra: UPDATE, 2da: SELECT actualizado
+    pool.query
+      .mockResolvedValueOnce([{ affectedRows: 1 }])
+      .mockResolvedValueOnce([[{ id: 1, estado: 'inactivo' }]]);
+
+    const res = await request(app)
+      .patch('/usuarios/1')
+      .send({ estado: 'inactivo' });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.estado).toBe('inactivo');
+    expect(pool.query.mock.calls[0][0]).toContain('SET estado = ?');
+    expect(pool.query.mock.calls[0][1]).toEqual(['inactivo', '1']);
+  });
+
+  test('DELETE /:id debe retornar 404 si el usuario no existe', async () => {
+    pool.query.mockResolvedValueOnce([{ affectedRows: 0 }]);
+
+    const res = await request(app).delete('/usuarios/99');
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error).toBe('Usuario no encontrado');
+  });
+});

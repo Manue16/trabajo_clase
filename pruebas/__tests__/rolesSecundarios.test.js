@@ -141,3 +141,19 @@ describe('Ronda 2 - Cobertura de catch (error 500) - Roles Secundarios', () => {
     expect(pool.query).toHaveBeenCalledTimes(1);
   });
 });
+
+// =====================================================================
+// Ronda 3 (13/10/2026): respuestas que no tenían prueba
+// =====================================================================
+describe('Ronda 3 - Respuestas faltantes - Roles Secundarios', () => {
+
+  test('DELETE /:usuario_id/:rol_secundario debe eliminar la asignación', async () => {
+    pool.query.mockResolvedValueOnce([{ affectedRows: 1 }]);
+
+    const res = await request(app).delete('/roles_secundarios/1/2');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.mensaje).toBe('Rol secundario eliminado exitosamente');
+    expect(pool.query.mock.calls[0][1]).toEqual(['1', '2']);
+  });
+});

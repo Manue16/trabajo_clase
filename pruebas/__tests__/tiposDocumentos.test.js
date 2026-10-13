@@ -150,3 +150,38 @@ describe('Ronda 2 - Cobertura de catch (error 500) - Tipos de Documento', () => 
     expect(pool.query).toHaveBeenCalledTimes(1);
   });
 });
+
+// =====================================================================
+// Ronda 3 (13/10/2026): respuestas que no tenían prueba
+// =====================================================================
+describe('Ronda 3 - Respuestas faltantes - Tipos de Documento', () => {
+
+  test('GET /:id debe retornar el tipo de documento encontrado', async () => {
+    pool.query.mockResolvedValueOnce([[{ id: 1, sigla: 'CC', nombre_documento: 'Cedula de ciudadania' }]]);
+
+    const res = await request(app).get('/tipos_documentos/1');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.sigla).toBe('CC');
+  });
+
+  test('PUT /:id debe retornar 404 si el tipo de documento no existe', async () => {
+    pool.query.mockResolvedValueOnce([{ affectedRows: 0 }]);
+
+    const res = await request(app)
+      .put('/tipos_documentos/99')
+      .send({ sigla: 'CE', nombre_documento: 'Cedula de extranjeria' });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error).toBe('Tipo de documento no encontrado');
+  });
+
+  test('DELETE /:id debe eliminar el tipo de documento', async () => {
+    pool.query.mockResolvedValueOnce([{ affectedRows: 1 }]);
+
+    const res = await request(app).delete('/tipos_documentos/1');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.mensaje).toBe('Tipo de documento eliminado exitosamente');
+  });
+});

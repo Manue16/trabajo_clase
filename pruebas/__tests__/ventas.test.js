@@ -203,3 +203,27 @@ describe('Ronda 2 - Cobertura de catch (error 500) - Ventas', () => {
     expect(pool.query).toHaveBeenCalledTimes(1);
   });
 });
+
+// =====================================================================
+// Ronda 3 (13/10/2026): respuestas que no tenían prueba
+// =====================================================================
+describe('Ronda 3 - Respuestas faltantes - Ventas', () => {
+
+  test('GET /:id debe retornar la venta encontrada', async () => {
+    pool.query.mockResolvedValueOnce([[{ id: 1, id_vendedor: 2, id_cliente: 3, total: 50000, pago: 1 }]]);
+
+    const res = await request(app).get('/ventas/1');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.total).toBe(50000);
+  });
+
+  test('DELETE /:id debe retornar 404 si la venta no existe', async () => {
+    pool.query.mockResolvedValueOnce([{ affectedRows: 0 }]);
+
+    const res = await request(app).delete('/ventas/99');
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error).toBe('Venta no encontrada');
+  });
+});
