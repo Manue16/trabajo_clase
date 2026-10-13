@@ -164,3 +164,64 @@ describe('Pruebas de Caja Blanca - Usuarios', () => {
     expect(res.body.error).toBe('Fallo de conexion');
   });
 });
+
+// =====================================================================
+// Ronda 2 (13/10/2026): cobertura de los bloques catch (respuesta 500)
+// =====================================================================
+describe('Ronda 2 - Cobertura de catch (error 500) - Usuarios', () => {
+
+  beforeEach(() => {
+    // Silenciamos el console.error de la ruta para no ensuciar la salida
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  test('GET /:id debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).get('/usuarios/1');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+
+  test('POST / debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).post('/usuarios').send({ login: 'nuevo', email: 'nuevo@test.com', password_harsh: '123', rol_id: 2 });
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+
+  test('PUT /:id debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).put('/usuarios/1').send({ email: 'cambio@test.com' });
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+
+  test('PATCH /:id debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).patch('/usuarios/1').send({ estado: 'inactivo' });
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+
+  test('DELETE /:id debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).delete('/usuarios/1');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+});

@@ -98,3 +98,54 @@ describe('Pruebas de Caja Blanca - Roles', () => {
     expect(res.body.error).toBe('Fallo de conexion');
   });
 });
+
+// =====================================================================
+// Ronda 2 (13/10/2026): cobertura de los bloques catch (respuesta 500)
+// =====================================================================
+describe('Ronda 2 - Cobertura de catch (error 500) - Roles', () => {
+
+  beforeEach(() => {
+    // Silenciamos el console.error de la ruta para no ensuciar la salida
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  test('GET /:id debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).get('/roles/1');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+
+  test('POST / debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).post('/roles').send({ tipo_rol: 'Vendedor' });
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+
+  test('PUT /:id debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).put('/roles/1').send({ tipo_rol: 'Otro' });
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+
+  test('DELETE /:id debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).delete('/roles/1');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+});

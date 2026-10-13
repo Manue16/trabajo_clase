@@ -117,3 +117,54 @@ describe('Pruebas de Caja Blanca - Tallas', () => {
     expect(res.body.error).toBe('Fallo de conexion');
   });
 });
+
+// =====================================================================
+// Ronda 2 (13/10/2026): cobertura de los bloques catch (respuesta 500)
+// =====================================================================
+describe('Ronda 2 - Cobertura de catch (error 500) - Tallas', () => {
+
+  beforeEach(() => {
+    // Silenciamos el console.error de la ruta para no ensuciar la salida
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  test('GET /:id debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).get('/tallas/1');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+
+  test('POST / debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).post('/tallas').send({ medida_id: 1, talla: 'L' });
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+
+  test('PUT /:id debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).put('/tallas/1').send({ medida_id: 1, talla: 'XL' });
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+
+  test('DELETE /:id debe retornar 500 si falla la BD', async () => {
+    pool.query.mockRejectedValueOnce(new Error('Fallo de conexion'));
+
+    const res = await request(app).delete('/tallas/1');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Fallo de conexion');
+    expect(pool.query).toHaveBeenCalledTimes(1);
+  });
+});
