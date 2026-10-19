@@ -1,0 +1,31 @@
+{
+  "_comentario": "Usuarios REALES de la base de datos para las pruebas. Cambia id, login, email y password por los de tu BD.",
+  "admin": {
+    "id": 1,
+    "login": "admin",
+    "email": "admin@mjbebikes.com",
+    "password": "admin123",
+    "rolId": 1
+  },
+  "vendedor": {
+    "id": 2,
+    "login": "vendedor",
+    "email": "vendedor@mjbebikes.com",
+    "password": "vendedor123",
+    "rolId": 2
+  },
+  "bodeguero": {
+    "id": 3,
+    "login": "bodeguero",
+    "email": "bodeguero@mjbebikes.com",
+    "password": "bodeguero123",
+    "rolId": 3
+  },
+  "cliente": {
+    "id": 4,
+    "login": "cliente",
+    "email": "cliente@mjbebikes.com",
+    "password": "cliente123",
+    "rolId": 4
+  }
+}
