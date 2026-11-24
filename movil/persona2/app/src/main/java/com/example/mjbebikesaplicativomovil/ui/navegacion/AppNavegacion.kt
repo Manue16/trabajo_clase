@@ -41,6 +41,8 @@ import com.example.mjbebikesaplicativomovil.ui.proveedores.ProveedorFormScreen
 import com.example.mjbebikesaplicativomovil.ui.proveedores.ProveedoresScreen
 import com.example.mjbebikesaplicativomovil.ui.proveedores.RutasProveedores
 import com.example.mjbebikesaplicativomovil.ui.tienda.RutasTienda
+import com.example.mjbebikesaplicativomovil.ui.usuarios.UsuarioFormScreen
+import com.example.mjbebikesaplicativomovil.ui.usuarios.UsuariosScreen
 import com.example.mjbebikesaplicativomovil.ui.ventas.DetalleVentaScreen
 import com.example.mjbebikesaplicativomovil.ui.ventas.NuevaVentaScreen
 import com.example.mjbebikesaplicativomovil.ui.ventas.VentasScreen
@@ -60,9 +62,12 @@ object RutasApp {
     const val VENTAS = "ventas"
     const val DETALLE_VENTA = "ventas/{id}"
     const val USUARIOS = "usuarios"
+    const val NUEVO_USUARIO = "usuarios/nuevo"
+    const val EDITAR_USUARIO = "usuarios/{id}/editar"
     const val PANEL = "panel"
 
     fun detalleVenta(id: Int) = "ventas/$id"
+    fun editarUsuario(id: Int) = "usuarios/$id/editar"
 }
 
 // Navegación principal de toda la app.
@@ -357,8 +362,40 @@ fun AppNavegacion() {
             }
         }
 
+        // Usuarios (solo administrador)
+        composable(RutasApp.USUARIOS) {
+            Protegida(sesionViewModel, RutasApp.USUARIOS, navController) {
+                UsuariosScreen(
+                    onNuevoUsuario = { navController.navigate(RutasApp.NUEVO_USUARIO) },
+                    onEditarUsuario = { id -> navController.navigate(RutasApp.editarUsuario(id)) }
+                )
+            }
+        }
+
+        composable(RutasApp.NUEVO_USUARIO) {
+            Protegida(sesionViewModel, RutasApp.USUARIOS, navController) {
+                UsuarioFormScreen(
+                    idUsuario = null,
+                    onVolver = { navController.popBackStack() },
+                    onGuardado = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable(
+            route = RutasApp.EDITAR_USUARIO,
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { entrada ->
+            Protegida(sesionViewModel, RutasApp.USUARIOS, navController) {
+                UsuarioFormScreen(
+                    idUsuario = entrada.arguments?.getInt("id"),
+                    onVolver = { navController.popBackStack() },
+                    onGuardado = { navController.popBackStack() }
+                )
+            }
+        }
+
         listOf(
-            RutasApp.USUARIOS to "Usuarios",
             RutasApp.PANEL to "Panel"
         ).forEach { (ruta, titulo) ->
             composable(ruta) {

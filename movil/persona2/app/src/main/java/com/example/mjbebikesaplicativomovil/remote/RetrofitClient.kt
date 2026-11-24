@@ -44,4 +44,9 @@ object RetrofitClient {
     fun createVentas(context: Context): VentasApi {
         return retrofit(context).create(VentasApi::class.java)
     }
+
+    // Servicio de la persona 2: administración de usuarios.
+    fun createUsuarios(context: Context): UsuariosApi {
+        return retrofit(context).create(UsuariosApi::class.java)
+    }
 }

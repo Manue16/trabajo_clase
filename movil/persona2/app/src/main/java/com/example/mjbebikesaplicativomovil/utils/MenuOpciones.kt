@@ -56,7 +56,7 @@ object MenuOpciones {
         OpcionMenu("Ventas", "Historial de ventas", "ventas",
             setOf(Roles.ADMIN, Roles.VENDEDOR)),
         OpcionMenu("Usuarios", "Empleados y cuentas", "usuarios",
-            setOf(Roles.ADMIN), disponible = false),
+            setOf(Roles.ADMIN)),
         OpcionMenu("Panel", "Resumen e indicadores", "panel",
             setOf(Roles.ADMIN, Roles.VENDEDOR, Roles.BODEGUERO), disponible = false)
     )
