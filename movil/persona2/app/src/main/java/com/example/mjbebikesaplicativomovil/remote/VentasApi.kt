@@ -2,6 +2,7 @@ package com.example.mjbebikesaplicativomovil.remote
 
 import com.example.mjbebikesaplicativomovil.remote.models.Cliente
 import com.example.mjbebikesaplicativomovil.remote.models.ClienteRespuesta
+import com.example.mjbebikesaplicativomovil.remote.models.Producto
 import com.example.mjbebikesaplicativomovil.remote.models.TipoDocumento
 import com.example.mjbebikesaplicativomovil.remote.models.Venta
 import com.example.mjbebikesaplicativomovil.remote.models.VentaNueva
@@ -41,4 +42,12 @@ interface VentasApi {
 
     @GET("tipos_documentos")
     suspend fun tiposDocumentos(): Response<List<TipoDocumento>>
+
+    // ---------- Listas para registrar una venta en tienda ----------
+
+    @GET("clientes")
+    suspend fun clientes(): Response<List<Cliente>>
+
+    @GET("productos")
+    suspend fun productos(): Response<List<Producto>>
 }

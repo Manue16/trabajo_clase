@@ -52,9 +52,9 @@ object MenuOpciones {
 
         // Ventas y administración (persona 2)
         OpcionMenu("Nueva venta", "Registrar una venta en tienda", "ventas/nueva",
-            setOf(Roles.VENDEDOR), disponible = false),
+            setOf(Roles.VENDEDOR)),
         OpcionMenu("Ventas", "Historial de ventas", "ventas",
-            setOf(Roles.ADMIN, Roles.VENDEDOR), disponible = false),
+            setOf(Roles.ADMIN, Roles.VENDEDOR)),
         OpcionMenu("Usuarios", "Empleados y cuentas", "usuarios",
             setOf(Roles.ADMIN), disponible = false),
         OpcionMenu("Panel", "Resumen e indicadores", "panel",

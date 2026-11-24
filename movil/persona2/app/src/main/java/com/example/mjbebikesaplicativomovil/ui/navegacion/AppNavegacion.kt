@@ -41,6 +41,9 @@ import com.example.mjbebikesaplicativomovil.ui.proveedores.ProveedorFormScreen
 import com.example.mjbebikesaplicativomovil.ui.proveedores.ProveedoresScreen
 import com.example.mjbebikesaplicativomovil.ui.proveedores.RutasProveedores
 import com.example.mjbebikesaplicativomovil.ui.tienda.RutasTienda
+import com.example.mjbebikesaplicativomovil.ui.ventas.DetalleVentaScreen
+import com.example.mjbebikesaplicativomovil.ui.ventas.NuevaVentaScreen
+import com.example.mjbebikesaplicativomovil.ui.ventas.VentasScreen
 import com.example.mjbebikesaplicativomovil.utils.MenuOpciones
 import com.example.mjbebikesaplicativomovil.utils.Roles
 import com.example.mjbebikesaplicativomovil.viewmodel.SesionUiState
@@ -55,8 +58,11 @@ object RutasApp {
     const val MIS_COMPRAS = "mis-compras"
     const val NUEVA_VENTA = "ventas/nueva"
     const val VENTAS = "ventas"
+    const val DETALLE_VENTA = "ventas/{id}"
     const val USUARIOS = "usuarios"
     const val PANEL = "panel"
+
+    fun detalleVenta(id: Int) = "ventas/$id"
 }
 
 // Navegación principal de toda la app.
@@ -311,9 +317,47 @@ fun AppNavegacion() {
             }
         }
 
+        // Historial de ventas (vendedor: las suyas; administrador: todas)
+        composable(RutasApp.VENTAS) {
+            Protegida(sesionViewModel, RutasApp.VENTAS, navController) {
+                VentasScreen(
+                    onNuevaVenta = { navController.navigate(RutasApp.NUEVA_VENTA) },
+                    onVerDetalle = { id -> navController.navigate(RutasApp.detalleVenta(id)) }
+                )
+            }
+        }
+
+        // Nueva venta en tienda (solo vendedor). Va antes que el detalle para que
+        // "nueva" no se lea como un id.
+        composable(RutasApp.NUEVA_VENTA) {
+            Protegida(sesionViewModel, RutasApp.NUEVA_VENTA, navController) {
+                NuevaVentaScreen(
+                    onVolver = { navController.popBackStack() },
+                    onGuardado = { id ->
+                        // Abre el detalle de la venta nueva en lugar del formulario.
+                        val destino = if (id > 0) RutasApp.detalleVenta(id) else RutasApp.VENTAS
+                        navController.navigate(destino) {
+                            popUpTo(RutasApp.NUEVA_VENTA) { inclusive = true }
+                        }
+                    }
+                )
+            }
+        }
+
+        // Detalle de una venta
+        composable(
+            route = RutasApp.DETALLE_VENTA,
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { entrada ->
+            Protegida(sesionViewModel, RutasApp.VENTAS, navController) {
+                DetalleVentaScreen(
+                    idVenta = entrada.arguments?.getInt("id") ?: 0,
+                    onVolver = { navController.popBackStack() }
+                )
+            }
+        }
+
         listOf(
-            RutasApp.NUEVA_VENTA to "Nueva venta",
-            RutasApp.VENTAS to "Ventas",
             RutasApp.USUARIOS to "Usuarios",
             RutasApp.PANEL to "Panel"
         ).forEach { (ruta, titulo) ->

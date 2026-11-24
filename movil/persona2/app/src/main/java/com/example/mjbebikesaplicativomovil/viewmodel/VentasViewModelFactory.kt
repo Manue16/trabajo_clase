@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.mjbebikesaplicativomovil.data.local.TokenManager
 import com.example.mjbebikesaplicativomovil.remote.RetrofitClient
 
-// Fábrica de los ViewModels de la persona 2 que usan ventas (finalizar compra y Mis compras).
+// Fábrica de los ViewModels de la persona 2 que usan ventas:
+// finalizar compra, Mis compras, historial de ventas, detalle de venta y nueva venta.
 class VentasViewModelFactory(
-    private val context: Context
+    private val context: Context,
+    private val idVenta: Int = 0
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(
@@ -25,6 +27,15 @@ class VentasViewModelFactory(
 
             modelClass.isAssignableFrom(MisComprasViewModel::class.java) ->
                 MisComprasViewModel(api, tokenManager) as T
+
+            modelClass.isAssignableFrom(VentasViewModel::class.java) ->
+                VentasViewModel(api, tokenManager) as T
+
+            modelClass.isAssignableFrom(DetalleVentaViewModel::class.java) ->
+                DetalleVentaViewModel(api, idVenta) as T
+
+            modelClass.isAssignableFrom(NuevaVentaViewModel::class.java) ->
+                NuevaVentaViewModel(api, tokenManager) as T
 
             else -> throw IllegalArgumentException("ViewModel desconocido")
         }
