@@ -38,7 +38,7 @@ object MenuOpciones {
 
         // Compra del cliente (persona 2)
         OpcionMenu("Mis compras", "Historial de tus compras", "mis-compras",
-            setOf(Roles.CLIENTE), disponible = false),
+            setOf(Roles.CLIENTE)),
 
         // Inventario y abastecimiento (persona 1)
         OpcionMenu("Inventario", "Productos y stock", "inventario",

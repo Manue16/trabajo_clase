@@ -20,6 +20,7 @@ import androidx.navigation.navArgument
 import com.example.mjbebikesaplicativomovil.data.local.SesionUsuario
 import com.example.mjbebikesaplicativomovil.ui.carrito.CarritoScreen
 import com.example.mjbebikesaplicativomovil.ui.catalogo.CatalogoScreen
+import com.example.mjbebikesaplicativomovil.ui.checkout.CheckoutScreen
 import com.example.mjbebikesaplicativomovil.ui.catalogo.DetalleProductoScreen
 import com.example.mjbebikesaplicativomovil.ui.clientes.ClienteFormScreen
 import com.example.mjbebikesaplicativomovil.ui.clientes.ClientesScreen
@@ -33,6 +34,7 @@ import com.example.mjbebikesaplicativomovil.ui.inventario.ProductoFormScreen
 import com.example.mjbebikesaplicativomovil.ui.inventario.RutasInventario
 import com.example.mjbebikesaplicativomovil.ui.login.LoginScreen
 import com.example.mjbebikesaplicativomovil.ui.menu.MenuScreen
+import com.example.mjbebikesaplicativomovil.ui.miscompras.MisComprasScreen
 import com.example.mjbebikesaplicativomovil.ui.menu.ProximamenteScreen
 import com.example.mjbebikesaplicativomovil.ui.menu.SinPermisoScreen
 import com.example.mjbebikesaplicativomovil.ui.proveedores.ProveedorFormScreen
@@ -281,7 +283,16 @@ fun AppNavegacion() {
             // Finalizar compra: solo el cliente con sesión (como en la web).
             val rolId = rolActual(sesionViewModel)
             if (rolId == Roles.CLIENTE) {
-                ProximamenteScreen("Finalizar compra", onVolver = { navController.popBackStack() })
+                CheckoutScreen(
+                    onVolver = { navController.popBackStack() },
+                    onVerProductos = { navController.navigate(RutasTienda.CATALOGO) },
+                    onVerMisCompras = {
+                        navController.navigate(RutasApp.MIS_COMPRAS) {
+                            popUpTo(RutasApp.MENU)
+                        }
+                    },
+                    onIrAlInicio = { volverAlMenu(navController) }
+                )
             } else {
                 SinPermisoScreen(
                     haySesion = rolId != null,
@@ -291,8 +302,16 @@ fun AppNavegacion() {
             }
         }
 
+        // Mis compras del cliente
+        composable(RutasApp.MIS_COMPRAS) {
+            Protegida(sesionViewModel, RutasApp.MIS_COMPRAS, navController) {
+                MisComprasScreen(
+                    onIrATienda = { navController.navigate(RutasTienda.CATALOGO) }
+                )
+            }
+        }
+
         listOf(
-            RutasApp.MIS_COMPRAS to "Mis compras",
             RutasApp.NUEVA_VENTA to "Nueva venta",
             RutasApp.VENTAS to "Ventas",
             RutasApp.USUARIOS to "Usuarios",
@@ -304,6 +323,13 @@ fun AppNavegacion() {
                 }
             }
         }
+    }
+}
+
+// Vuelve al menú si está en la pila de pantallas; si no (entró sin pasar por él), lo abre.
+private fun volverAlMenu(navController: NavHostController) {
+    if (!navController.popBackStack(RutasApp.MENU, inclusive = false)) {
+        navController.navigate(RutasApp.MENU)
     }
 }
 
