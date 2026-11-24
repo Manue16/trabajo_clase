@@ -2,6 +2,7 @@ package com.example.mjbebikesaplicativomovil.remote
 
 import com.example.mjbebikesaplicativomovil.remote.models.Cliente
 import com.example.mjbebikesaplicativomovil.remote.models.ClienteRespuesta
+import com.example.mjbebikesaplicativomovil.remote.models.Dashboard
 import com.example.mjbebikesaplicativomovil.remote.models.Producto
 import com.example.mjbebikesaplicativomovil.remote.models.TipoDocumento
 import com.example.mjbebikesaplicativomovil.remote.models.Venta
@@ -50,4 +51,10 @@ interface VentasApi {
 
     @GET("productos")
     suspend fun productos(): Response<List<Producto>>
+
+    // ---------- Panel del administrador ----------
+
+    // Resumen general calculado por la API (totales, ventas del mes, stock bajo...).
+    @GET("reportes/dashboard")
+    suspend fun dashboard(): Response<Dashboard>
 }

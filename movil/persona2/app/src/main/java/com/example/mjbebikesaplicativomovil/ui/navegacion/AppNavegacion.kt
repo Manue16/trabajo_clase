@@ -35,7 +35,7 @@ import com.example.mjbebikesaplicativomovil.ui.inventario.RutasInventario
 import com.example.mjbebikesaplicativomovil.ui.login.LoginScreen
 import com.example.mjbebikesaplicativomovil.ui.menu.MenuScreen
 import com.example.mjbebikesaplicativomovil.ui.miscompras.MisComprasScreen
-import com.example.mjbebikesaplicativomovil.ui.menu.ProximamenteScreen
+import com.example.mjbebikesaplicativomovil.ui.panel.PanelScreen
 import com.example.mjbebikesaplicativomovil.ui.menu.SinPermisoScreen
 import com.example.mjbebikesaplicativomovil.ui.proveedores.ProveedorFormScreen
 import com.example.mjbebikesaplicativomovil.ui.proveedores.ProveedoresScreen
@@ -287,8 +287,7 @@ fun AppNavegacion() {
             }
         }
 
-        // ---------------- Módulos de la persona 2 (por hacer) ----------------
-        // Cuando estén listos, se reemplaza ProximamenteScreen por la pantalla real.
+        // ---------------- Módulos de la persona 2 ----------------
 
         composable(RutasApp.CHECKOUT) {
             // Finalizar compra: solo el cliente con sesión (como en la web).
@@ -395,13 +394,10 @@ fun AppNavegacion() {
             }
         }
 
-        listOf(
-            RutasApp.PANEL to "Panel"
-        ).forEach { (ruta, titulo) ->
-            composable(ruta) {
-                Protegida(sesionViewModel, ruta, navController) {
-                    ProximamenteScreen(titulo, onVolver = { navController.popBackStack() })
-                }
+        // Panel de inicio (cada rol ve sus indicadores)
+        composable(RutasApp.PANEL) {
+            Protegida(sesionViewModel, RutasApp.PANEL, navController) {
+                PanelScreen(onIrA = { ruta -> navController.navigate(ruta) })
             }
         }
     }

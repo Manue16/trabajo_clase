@@ -58,7 +58,7 @@ object MenuOpciones {
         OpcionMenu("Usuarios", "Empleados y cuentas", "usuarios",
             setOf(Roles.ADMIN)),
         OpcionMenu("Panel", "Resumen e indicadores", "panel",
-            setOf(Roles.ADMIN, Roles.VENDEDOR, Roles.BODEGUERO), disponible = false)
+            setOf(Roles.ADMIN, Roles.VENDEDOR, Roles.BODEGUERO))
     )
 
     // Rutas que se pueden ver sin iniciar sesión (igual que la tienda de la web).

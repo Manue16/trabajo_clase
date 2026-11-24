@@ -7,7 +7,7 @@ import com.example.mjbebikesaplicativomovil.data.local.TokenManager
 import com.example.mjbebikesaplicativomovil.remote.RetrofitClient
 
 // Fábrica de los ViewModels de la persona 2 que usan ventas:
-// finalizar compra, Mis compras, historial de ventas, detalle de venta y nueva venta.
+// finalizar compra, Mis compras, historial de ventas, detalle de venta, nueva venta y panel.
 class VentasViewModelFactory(
     private val context: Context,
     private val idVenta: Int = 0
@@ -36,6 +36,9 @@ class VentasViewModelFactory(
 
             modelClass.isAssignableFrom(NuevaVentaViewModel::class.java) ->
                 NuevaVentaViewModel(api, tokenManager) as T
+
+            modelClass.isAssignableFrom(PanelViewModel::class.java) ->
+                PanelViewModel(api, tokenManager) as T
 
             else -> throw IllegalArgumentException("ViewModel desconocido")
         }
