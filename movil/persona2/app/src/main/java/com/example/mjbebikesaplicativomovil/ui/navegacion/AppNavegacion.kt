@@ -38,6 +38,7 @@ import com.example.mjbebikesaplicativomovil.ui.miscompras.MisComprasScreen
 import com.example.mjbebikesaplicativomovil.ui.panel.PanelScreen
 import com.example.mjbebikesaplicativomovil.ui.menu.SinPermisoScreen
 import com.example.mjbebikesaplicativomovil.ui.proveedores.ProveedorFormScreen
+import com.example.mjbebikesaplicativomovil.ui.registro.RegistroScreen
 import com.example.mjbebikesaplicativomovil.ui.proveedores.ProveedoresScreen
 import com.example.mjbebikesaplicativomovil.ui.proveedores.RutasProveedores
 import com.example.mjbebikesaplicativomovil.ui.tienda.RutasTienda
@@ -55,6 +56,7 @@ import com.example.mjbebikesaplicativomovil.viewmodel.SesionViewModelFactory
 // Rutas propias de la persona 2.
 object RutasApp {
     const val LOGIN = "login"
+    const val REGISTRO = "registro"
     const val MENU = "menu"
     const val CHECKOUT = "checkout"
     const val MIS_COMPRAS = "mis-compras"
@@ -106,7 +108,16 @@ fun AppNavegacion() {
                         popUpTo(RutasApp.LOGIN) { inclusive = true }
                     }
                 },
-                onVerTienda = { navController.navigate(RutasTienda.CATALOGO) }
+                onVerTienda = { navController.navigate(RutasTienda.CATALOGO) },
+                onRegistrarse = { navController.navigate(RutasApp.REGISTRO) }
+            )
+        }
+
+        // Registro de cliente (público)
+        composable(RutasApp.REGISTRO) {
+            RegistroScreen(
+                onRegistrado = { irAlLogin(navController) },
+                onIrALogin = { irAlLogin(navController) }
             )
         }
 
@@ -400,6 +411,13 @@ fun AppNavegacion() {
                 PanelScreen(onIrA = { ruta -> navController.navigate(ruta) })
             }
         }
+    }
+}
+
+// Vuelve al login si está en la pila de pantallas; si no, lo abre.
+private fun irAlLogin(navController: NavHostController) {
+    if (!navController.popBackStack(RutasApp.LOGIN, inclusive = false)) {
+        navController.navigate(RutasApp.LOGIN)
     }
 }
 

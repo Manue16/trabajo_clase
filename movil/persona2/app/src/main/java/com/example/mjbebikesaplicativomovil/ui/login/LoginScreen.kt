@@ -38,7 +38,9 @@ fun LoginScreen(
     // Qué hacer cuando el inicio de sesión sale bien (abrir el menú).
     onLoginExitoso: () -> Unit = {},
     // Ver la tienda sin iniciar sesión (como en la web).
-    onVerTienda: () -> Unit = {}
+    onVerTienda: () -> Unit = {},
+    // Abrir el registro de cliente.
+    onRegistrarse: () -> Unit = {}
 ) {
 
     // Obtenemos el contexto de Android.
@@ -147,6 +149,10 @@ fun LoginScreen(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
+
+            TextButton(onClick = onRegistrarse) {
+                Text("¿No tienes cuenta? Regístrate aquí")
+            }
 
             TextButton(onClick = onVerTienda) {
                 Text("Ver productos sin iniciar sesión")

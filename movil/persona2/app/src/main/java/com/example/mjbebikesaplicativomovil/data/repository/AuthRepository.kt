@@ -4,6 +4,8 @@ import com.example.mjbebikesaplicativomovil.data.local.TokenManager
 import com.example.mjbebikesaplicativomovil.remote.ApiService
 import com.example.mjbebikesaplicativomovil.remote.models.LoginRequest
 import com.example.mjbebikesaplicativomovil.remote.models.LoginResponse
+import com.example.mjbebikesaplicativomovil.remote.models.RegistroRequest
+import com.example.mjbebikesaplicativomovil.remote.models.RegistroResponse
 import retrofit2.Response
 
 class AuthRepository(
@@ -37,6 +39,11 @@ class AuthRepository(
         }
 
         return response
+    }
+
+    // Crea la cuenta de un cliente nuevo. No inicia sesión: después se entra con el login.
+    suspend fun registrar(request: RegistroRequest): Response<RegistroResponse> {
+        return apiService.register(request)
     }
 
     // Cierra la sesión en Laravel y borra los datos guardados en el teléfono.
