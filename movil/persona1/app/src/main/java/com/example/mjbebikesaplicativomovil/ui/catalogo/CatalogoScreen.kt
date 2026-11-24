@@ -1,5 +1,6 @@
 package com.example.mjbebikesaplicativomovil.ui.catalogo
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,11 +17,17 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -40,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.mjbebikesaplicativomovil.data.repository.CarritoRepository
 import com.example.mjbebikesaplicativomovil.remote.models.Producto
 import com.example.mjbebikesaplicativomovil.utils.CatalogoFiltro
 import com.example.mjbebikesaplicativomovil.utils.OrdenPrecio
@@ -47,12 +55,14 @@ import com.example.mjbebikesaplicativomovil.viewmodel.CatalogoUiState
 import com.example.mjbebikesaplicativomovil.viewmodel.CatalogoViewModel
 import com.example.mjbebikesaplicativomovil.viewmodel.CatalogoViewModelFactory
 
-// FilterChip es experimental en algunas versiones de Material 3.
+// FilterChip y BadgedBox son experimentales en algunas versiones de Material 3.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogoScreen(
-    // Qué hacer al tocar un producto (lo usará la pantalla de detalle).
-    onProductoClick: (Producto) -> Unit = {}
+    // Qué hacer al tocar un producto (abre su detalle).
+    onProductoClick: (Producto) -> Unit = {},
+    // Qué hacer al tocar el ícono del carrito.
+    onCarritoClick: () -> Unit = {}
 ) {
 
     // Obtenemos el contexto de Android.
@@ -69,6 +79,10 @@ fun CatalogoScreen(
     val marca by catalogoViewModel.marca.collectAsState()
     val orden by catalogoViewModel.orden.collectAsState()
 
+    // Unidades en el carrito (el número que se ve sobre el ícono).
+    val itemsCarrito by CarritoRepository.items.collectAsState()
+    val unidadesCarrito = itemsCarrito.sumOf { it.cantidad }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -80,16 +94,37 @@ fun CatalogoScreen(
                 .padding(16.dp)
         ) {
 
-            Text(
-                text = "Nuestros productos",
-                style = MaterialTheme.typography.headlineSmall
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
 
-            Text(
-                text = "Encuentra el producto que necesitas",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Nuestros productos",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+
+                    Text(
+                        text = "Encuentra el producto que necesitas",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                // Ícono del carrito con el número de unidades.
+                IconButton(onClick = onCarritoClick) {
+                    BadgedBox(
+                        badge = {
+                            if (unidadesCarrito > 0) {
+                                Badge { Text(unidadesCarrito.toString()) }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ShoppingCart,
+                            contentDescription = "Carrito"
+                        )
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -199,7 +234,13 @@ fun CatalogoScreen(
                             items(productos, key = { it.id ?: it.hashCode() }) { producto ->
                                 ProductoCard(
                                     producto = producto,
-                                    onClick = { onProductoClick(producto) }
+                                    onClick = { onProductoClick(producto) },
+                                    onAgregar = {
+                                        val agregado = CarritoRepository.agregar(producto)
+                                        val mensaje = if (agregado) "Agregado al carrito"
+                                        else "No hay más unidades disponibles"
+                                        Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show()
+                                    }
                                 )
                             }
                         }
@@ -214,8 +255,11 @@ fun CatalogoScreen(
 @Composable
 fun ProductoCard(
     producto: Producto,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onAgregar: () -> Unit
 ) {
+    val stock = producto.cantProducto ?: 0
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -255,6 +299,21 @@ fun ProductoCard(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Si no hay stock, el botón se desactiva.
+            Button(
+                onClick = onAgregar,
+                enabled = stock > 0,
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = if (stock > 0) "Agregar" else "Agotado",
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
         }
     }
 }
